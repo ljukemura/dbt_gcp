@@ -31,12 +31,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   dbt_felix:
+    +materialized: table
     bronze:
-      +materialized: table
-      +schema: bronze  
+      +schema: "{{ 'bronze' if target.name == 'prod' else 'sandbox' }}"
     silver:
-      +materialized: table
-      +schema: silver  
+      +schema: "{{ 'silver' if target.name == 'prod' else 'sandbox' }}"
     gold:
-      +materialized: table
-      +schema: gold  
+      +schema: "{{ 'gold' if target.name == 'prod' else 'sandbox' }}"
+ 
