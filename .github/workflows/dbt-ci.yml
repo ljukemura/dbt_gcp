@@ -51,4 +51,4 @@ jobs:
         run: dbt compile --target ci
 
       - name: Run dbt tests
-        run: dbt test --target ci
+        run: dbt build --target ci
