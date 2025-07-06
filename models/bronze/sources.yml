@@ -1,0 +1,61 @@
+version: 2
+
+sources:
+  - name: sources
+    schema: sources
+    tables:
+      - name: customers
+        description: >
+          Raw customer data ingested from the source system.
+          Contains all historical updates per customer, including name changes.
+        columns:
+          - name: customer_id
+            description: Identifier for each customer.
+            tests:
+              - not_null
+          - name: customer_name
+            description: Name of the customer
+          - name: updated_at
+            description: Timestamp of the most recent update to the customer record.
+      - name: order_details
+        description: >
+          Line items for each customer order. Each row represents a product included in an order, along with quantity and timestamp of the update.
+        columns:
+          - name: order_id
+            description: Unique identifier of the order this item belongs to.
+            tests:
+              - not_null
+          - name: product_id
+            description: Identifier of the product included in the order.
+          - name: quantity
+            description: Quantity of the product ordered.
+          - name: updated_at
+            description: Timestamp when the order detail was last updated.
+      - name: orders
+        description: >
+          Orders placed by customers. Each row represents a single transaction, with customer reference and timestamps.
+        columns:
+          - name: order_id
+            description: Unique identifier for the order.
+            tests:
+              - not_null
+              - unique
+          - name: customer_id
+            description: Identifier of the customer who placed the order.
+          - name: order_date
+            description: The date when the order was placed.
+          - name: updated_at
+            description: Timestamp when the order record was last updated.
+      - name: products
+        description: >
+          Product catalog containing product identifiers, names, and prices.
+        columns:
+          - name: product_id
+            description: Unique identifier for the product.
+            tests:
+              - not_null
+              - unique
+          - name: product_name
+            description: Name of the product.
+          - name: price
+            description: Product price.

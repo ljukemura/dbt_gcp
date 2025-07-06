@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: b_customers
+    description: >
+      Table consolidates customer records from the source table.
+      Keeps only the latest version of each customer's name based.
+    tags: ['customers']
+    meta:
+      layer: bronze
+      owner: 'data_team'
+    columns:
+      - name: customer_id
+        description: Unique identifier of the customer.
+        tests:
+          - not_null
+          - unique
+      - name: customer_name
+        description: Most recent customer name based on update timestamp.
+      - name: created_at
+        description: Timestamp of the customer's first appearance in the system.
+      - name: updated_at
+        description: Timestamp of the customer's most recent update.
+      - name: total_changes
+        description: Total number of records found for this customer in the source table.
