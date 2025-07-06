@@ -7,5 +7,5 @@ SELECT
   d.quantity,
   p.price AS unit_price,
   d.quantity * p.price AS total_price
-FROM `dbt-felix.sources.order_details` AS d   
-  LEFT JOIN `dbt-felix.sources.products` AS p ON d.product_id = p.product_id
+FROM {{ source("sources", "order_details") }} AS d   
+  LEFT JOIN {{ source("sources", "products") }} AS p ON d.product_id = p.product_id
