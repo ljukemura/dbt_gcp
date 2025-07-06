@@ -1,0 +1,54 @@
+name: dbt Production
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  
+  workflow_dispatch:
+
+jobs:
+  dbt-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dbt for BigQuery
+        run: |
+          pip install --upgrade pip
+          pip install dbt-bigquery
+
+      - name: Configure dbt profile and keyfile
+        env:
+          DBT_KEYFILE_JSON: ${{ secrets.DBT_KEYFILE_JSON }}
+        run: |
+          mkdir -p ~/.dbt
+          echo "$DBT_KEYFILE_JSON" > ~/.dbt/keyfile.json
+
+          cat > ~/.dbt/profiles.yml <<EOF
+          dbt_felix:
+            target: prod
+            outputs:
+              prod:
+                type: bigquery
+                method: service-account
+                project: dbt-felix
+                dataset: dbt
+                threads: 4
+                keyfile: /home/runner/.dbt/keyfile.json
+                location: US
+          EOF
+
+      - name: Install dbt dependencies
+        run: dbt deps
+
+      - name: Compile dbt project
+        run: dbt compile --target prod
+
+      - name: Run dbt
+        run: dbt build --target prod
