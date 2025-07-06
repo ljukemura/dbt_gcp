@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: s_orders
+    description: >
+      Table orders with enriched metrics, including product count,
+      item quantities, total spent, and a flag for empty orders (no items).
+    tags: ['orders', 'sales']
+    meta:
+      layer: silver
+      owner: 'data_team'
+    columns:
+      - name: order_id
+        description: Unique identifier for the order.
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Identifier of the customer who placed the order.
+        tests:
+          - not_null
+      - name: order_date
+        description: Date when the order was placed.
+      - name: created_at
+        description: Timestamp when the order was created.
+      - name: num_products
+        description: Total number of distinct products in the order.
+      - name: num_items
+        description: Total quantity of items in the order.
+      - name: total_spent
+        description: Total value spent in the order (sum of item prices).
+      - name: is_order_empty
+        description: Boolean flag indicating if the order is empty (no items).
