@@ -65,23 +65,25 @@ jobs:
       - name: Detect modified models
         id: detect_models
         run: |
-          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts --output name)
-          echo "Modelos modificados detectados:"
-          echo "$MODIFIED_MODELS"
-          echo "modified_models=$MODIFIED_MODELS" >> "$GITHUB_OUTPUT"
+          modified_models=$(dbt ls \
+            --quiet \
+            --target ci \
+            --state state-artifacts \
+            --select state:modified \
+            --resource-type model \
+            --output name)
+          echo "modified_models<<EOF" >> $GITHUB_OUTPUT
+          echo "$modified_models"         >> $GITHUB_OUTPUT
+          echo "EOF"                      >> $GITHUB_OUTPUT
 
       - name: Run models
         if: steps.detect_models.outputs.modified_models != ''
         run: |
-          MODIFIED_MODELS="${{ steps.detect_models.outputs.modified_models }}"
-          echo "Rodando modelos:"
-          echo "$MODIFIED_MODELS"
-          dbt run -m "+${MODIFIED_MODELS// / +}+1" --target ci
+          models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
+          dbt run --target ci -m "+${models// / +}+1"
 
       - name: Run tests
         if: steps.detect_models.outputs.modified_models != ''
         run: |
-          MODIFIED_MODELS="${{ steps.detect_models.outputs.modified_models }}"
-          echo "Testando modelos:"
-          echo "$MODIFIED_MODELS"
-          dbt test -m "+${MODIFIED_MODELS// / +}+1" --target ci
+          models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
+          dbt test --target ci -m "+${models// / +}+1"
