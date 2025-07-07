@@ -64,7 +64,7 @@ jobs:
 
       - name: Run models
         run: |
-          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
+          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts --output name)
           if [ -z "$MODIFIED_MODELS" ]; then
             echo "Nenhum modelo modificado. Nada a rodar."
           else
@@ -74,7 +74,7 @@ jobs:
           fi
       - name: Run tests
         run: |
-          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
+          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts --output name)
           if [ -z "$MODIFIED_MODELS" ]; then
             echo "Nenhum modelo modificado. Nada a testar."
           else
