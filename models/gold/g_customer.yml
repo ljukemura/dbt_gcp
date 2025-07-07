@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: g_customer
+    description: >
+      Table containing customer information with enriched metrics,
+      including total orders, total spent, and average order value.
+    tags: ['customer', 'metrics']
+    meta:
+      layer: gold
+      owner: 'data_team'
+    columns:
+      - name: customer_id
+        description: Unique identifier for the customer.
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: First name of the customer.
+      - name: last_name
+        description: Last name of the customer.
+      - name: email
+        description: Email address of the customer.
+      - name: total_orders
+        description: Total number of orders placed by the customer.
+      - name: total_spent
+        description: Total amount spent by the customer across all orders.
+      - name: avg_order_value
+        description: Average value of orders placed by the customer.
