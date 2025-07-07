@@ -62,23 +62,34 @@ jobs:
           dbt deps
           dbt compile --target ci
 
+      - name: Detect modified models
+        id: detect_models
+        run: |
+          modified_models=$(dbt ls \
+            --quiet \
+            --target ci \
+            --state state-artifacts \
+            --select state:modified \
+            --resource-type model \
+            --output name)
+          echo "modified_models<<EOF" >> $GITHUB_OUTPUT
+          echo "$modified_models"         >> $GITHUB_OUTPUT
+          echo "EOF"                      >> $GITHUB_OUTPUT
+
       - name: Run models
+        if: steps.detect_models.outputs.modified_models != ''
         run: |
-          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
-          if [ -z "$MODIFIED_MODELS" ]; then
-            echo "Nenhum modelo modificado. Nada a rodar."
-          else
-            echo "Rodando modelos modificados e vizinhos:"
-            echo "$MODIFIED_MODELS"
-            dbt run --target ci -m "+${MODIFIED_MODELS// / +}+1"
-          fi
+          # junta nomes em uma linha
+          models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
+          # para cada modelo, cria "1+<model>+1 "
+          selectors=$(for m in $models; do printf "1+%s+1 " "$m"; done)
+          echo "Running dbt run for: $selectors"
+          dbt run --target ci -m "$selectors"
+
       - name: Run tests
+        if: steps.detect_models.outputs.modified_models != ''
         run: |
-          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
-          if [ -z "$MODIFIED_MODELS" ]; then
-            echo "Nenhum modelo modificado. Nada a testar."
-          else
-            echo "Testando modelos modificados e vizinhos:"
-            echo "$MODIFIED_MODELS"
-            dbt test --target ci -m "+${MODIFIED_MODELS// / +}+1"
-          fi
+          models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
+          selectors=$(for m in $models; do printf "1+%s+1 " "$m"; done)
+          echo "Running dbt test for: $selectors"
+          dbt test --target ci -m "$selectors"
