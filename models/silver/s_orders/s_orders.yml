@@ -23,6 +23,8 @@ models:
         description: Date when the order was placed.
       - name: created_at
         description: Timestamp when the order was created.
+      - name: weekday_name
+        description: Name of the weekday when the order was placed.
       - name: num_products
         description: Total number of distinct products in the order.
       - name: num_items
