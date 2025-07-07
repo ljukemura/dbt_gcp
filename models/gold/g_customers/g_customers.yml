@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: g_customer
+  - name: g_customers
     description: >
       Final report at the customer level, showing:
       - Customer Name  
