@@ -1,7 +1,7 @@
 SELECT 
     o.customer_id,
     c.customer_name,
-    SUM(o.total_spent) AS total_spent,
+    SUM(o.total_spent) AS total_amount_spent,
     COUNT(o.order_id) AS num_orders,
     COUNTIF(o.flag_order_empyt) AS num_empty_orders,
     MIN(o.created_at) AS first_order_datetime,
