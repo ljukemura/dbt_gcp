@@ -9,6 +9,9 @@ models:
     meta:
       layer: bronze
       owner: 'data_team'
+    tests:
+      - warn_customer_created_after_order:
+          severity: warn
     columns:
       - name: customer_id
         description: Unique identifier of the customer.
