@@ -79,11 +79,17 @@ jobs:
       - name: Run models
         if: steps.detect_models.outputs.modified_models != ''
         run: |
+          # junta nomes em uma linha
           models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
-          dbt run --target ci -m "+${models// / +}+1"
+          # para cada modelo, cria "1+<model>+1 "
+          selectors=$(for m in $models; do printf "1+%s+1 " "$m"; done)
+          echo "Running dbt run for: $selectors"
+          dbt run --target ci -m "$selectors"
 
       - name: Run tests
         if: steps.detect_models.outputs.modified_models != ''
         run: |
           models=$(echo "${{ steps.detect_models.outputs.modified_models }}" | tr '\n' ' ')
-          dbt test --target ci -m "+${models// / +}+1"
+          selectors=$(for m in $models; do printf "1+%s+1 " "$m"; done)
+          echo "Running dbt test for: $selectors"
+          dbt test --target ci -m "$selectors"
