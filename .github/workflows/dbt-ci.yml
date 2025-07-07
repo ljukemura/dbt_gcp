@@ -73,13 +73,15 @@ jobs:
       - name: Run models
         if: steps.detect_models.outputs.modified_models != ''
         run: |
+          MODIFIED_MODELS="${{ steps.detect_models.outputs.modified_models }}"
           echo "Rodando modelos:"
-          echo "${{ steps.detect_models.outputs.modified_models }}"
-          dbt run -m "+${{ steps.detect_models.outputs.modified_models // ' ' / ' +' }}+1" --target ci
+          echo "$MODIFIED_MODELS"
+          dbt run -m "+${MODIFIED_MODELS// / +}+1" --target ci
 
       - name: Run tests
         if: steps.detect_models.outputs.modified_models != ''
         run: |
+          MODIFIED_MODELS="${{ steps.detect_models.outputs.modified_models }}"
           echo "Testando modelos:"
-          echo "${{ steps.detect_models.outputs.modified_models }}"
-          dbt test -m "+${{ steps.detect_models.outputs.modified_models // ' ' / ' +' }}+1" --target ci
+          echo "$MODIFIED_MODELS"
+          dbt test -m "+${MODIFIED_MODELS// / +}+1" --target ci
