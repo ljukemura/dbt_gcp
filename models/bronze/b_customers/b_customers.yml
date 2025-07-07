@@ -9,6 +9,16 @@ models:
     meta:
       layer: bronze
       owner: 'data_team'
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: |
+            NOT EXISTS (
+              SELECT 1
+              FROM {{ ref('b_customers') }} c
+              JOIN {{ ref('s_orders') }} o USING (customer_id)
+              WHERE c.created_at > o.created_at
+            )
+          severity: warn
     columns:
       - name: customer_id
         description: Unique identifier of the customer.
