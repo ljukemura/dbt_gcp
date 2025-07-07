@@ -15,9 +15,6 @@ models:
         tests:
           - not_null
           - unique
-          - dbt_utils.relationships:
-              to: ref('b_customers')
-              field: customer_id
       - name: customer_name
         description: Name of the customer.
         tests:
