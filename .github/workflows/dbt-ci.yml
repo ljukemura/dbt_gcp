@@ -70,7 +70,7 @@ jobs:
           else
             echo "Rodando modelos modificados e vizinhos:"
             echo "$MODIFIED_MODELS"
-            dbt run --target ci -m "+${MODIFIED_MODELS// / +}+1"
+            dbt run -m "+${MODIFIED_MODELS// / +}+1" --target ci
           fi
       - name: Run tests
         run: |
@@ -80,5 +80,5 @@ jobs:
           else
             echo "Testando modelos modificados e vizinhos:"
             echo "$MODIFIED_MODELS"
-            dbt test --target ci -m "+${MODIFIED_MODELS// / +}+1"
+            dbt test -m "+${MODIFIED_MODELS// / +}+1" --target ci
           fi
