@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: g_customers
+    description: >
+      Final report at the customer level, showing:
+      - Customer Name  
+      - Total amount spent  
+      - Number of orders  
+      - Number of orders flagged as empty  
+      - First and last order timestamps
+    columns:
+      - name: customer_id
+        description: Unique identifier of the customer.
+        tests:
+          - not_null
+          - unique
+      - name: customer_name
+        description: Name of the customer.
+        tests:
+          - not_null
+      - name: total_amount_spent
+        description: Total amount spent by the customer across all orders.
+        tests:
+          - not_null
+      - name: num_orders
+        description: Total number of orders placed by the customer.
+      - name: num_empty_orders
+        description: Number of orders flagged as empty for the customer.
+      - name: first_order_datetime
+        description: Timestamp of the customer's first order.
+      - name: last_order_datetime
+        description: Timestamp of the customer's most recent order.

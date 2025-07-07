@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: b_order_details_enriched
+  - name: s_order_details
     description: >
       Table that joins the order_details source with the products table
       to enrich each order detail with product information, including name and price.
