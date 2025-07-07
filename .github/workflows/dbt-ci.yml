@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout PR branch
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -44,11 +44,41 @@ jobs:
                 location: US
           EOF
 
-      - name: Install dbt dependencies
+      - name: Instala dependências da branch do PR (atual)
         run: dbt deps
 
-      - name: Compile dbt project
-        run: dbt compile --target ci
+      - name: Salva o estado da branch main
+        run: |
+          git fetch origin main
+          git checkout origin/main
+          dbt deps
+          dbt compile --target ci
+          mkdir -p state-artifacts
+          cp target/manifest.json state-artifacts/manifest.json
 
-      - name: Run dbt tests
-        run: dbt build --target ci
+      - name: Volta para a branch do PR
+        run: |
+          git checkout -
+          dbt deps
+          dbt compile --target ci
+
+      - name: Run models
+        run: |
+          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
+          if [ -z "$MODIFIED_MODELS" ]; then
+            echo "Nenhum modelo modificado. Nada a rodar."
+          else
+            echo "Rodando modelos modificados e vizinhos:"
+            echo "$MODIFIED_MODELS"
+            dbt run --target ci -m "+${MODIFIED_MODELS// / +}+1"
+          fi
+      - name: Run tests
+        run: |
+          MODIFIED_MODELS=$(dbt ls --target ci --select state:modified --state state-artifacts/manifest.json --output name)
+          if [ -z "$MODIFIED_MODELS" ]; then
+            echo "Nenhum modelo modificado. Nada a testar."
+          else
+            echo "Testando modelos modificados e vizinhos:"
+            echo "$MODIFIED_MODELS"
+            dbt test --target ci -m "+${MODIFIED_MODELS// / +}+1"
+          fi
