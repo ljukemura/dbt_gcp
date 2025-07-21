@@ -1,4 +1,4 @@
-# dbt\_felix
+# dbt\_gcp
 
 A dbt project to build a multi-layered analytics pipeline for orders and customers data in BigQuery.
 It implements Bronze/Silver/Gold schemas, incremental models, custom tests (using `dbt_utils`), and GitHub Actions CI.
